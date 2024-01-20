@@ -103,7 +103,6 @@ func (c *Cache) DealeteEx() {
 	}
 	c.items = new
 	c.mu.Unlock()
-	AddNewMap(c, new)
 }
  
 func AddNewMap(c *Cache, n map[string]Item)  {
