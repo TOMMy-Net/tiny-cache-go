@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -20,6 +21,18 @@ type Item struct {
 	Created    time.Time
 	Expiration int64
 }
+type Cleaner interface {
+	DealeteEx()
+}
+
+type Result interface {
+	String() string
+	Byte() ([]byte, error)
+}
+
+const (
+	NotByte = "This type not []byte"
+)
 
 const (
 	defaultExpirationConst      = 5 * time.Hour    // 6 hour
@@ -50,7 +63,6 @@ func (c *Cache) SetDefaultExpiration(t time.Duration) {
 	c.DefaultExpiration = t
 }
 
-
 // Set a new default cache CleanupInterval time
 func (c *Cache) SetDefaultCleanupInterval(t time.Duration) {
 	c.mu.Lock()
@@ -73,24 +85,47 @@ func (c *Cache) Set(key string, value interface{}, duration time.Duration) {
 }
 
 // Retern key vallue
-func (c *Cache) Get(key string) (string, bool) {
+func (c *Cache) Get(key string) Result {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	item, found := c.Items[key]
 	if !found {
-		return "", false
+		return nil
 	} else {
 		if item.Expiration > time.Now().UnixMilli() {
-			return fmt.Sprint(item.Value), true
+			return item
+
 		}
 	}
-	return "", false
+	return nil
 
+}
+
+// Always return string
+func (i Item) String() string {
+	return fmt.Sprint(i.Value)
+}
+
+// Return []byte
+func (i Item) Byte() ([]byte, error) {
+	if i.Value != nil {
+		if v, ok := i.Value.([]byte); ok {
+			return v, nil
+		} else {
+			return nil, errors.New(NotByte)
+		}
+	}
+	return nil, nil
 }
 
 // Return full cache
 func (c *Cache) GetFullMap() map[string]Item {
 	return c.Items
+}
+
+// Return len of data
+func (c *Cache) Count() int {
+	return len(c.Items)
 }
 
 // Returns the key expiration time in Unix
@@ -120,7 +155,6 @@ func (c *Cache) DealeteAllCache() {
 	new := make(map[string]Item)
 	c.Items = new
 }
-
 
 func (c *Cache) DealeteEx() {
 	c.mu.Lock()
