@@ -28,10 +28,12 @@ type Cleaner interface {
 type Result interface {
 	String() string
 	Byte() ([]byte, error)
+	Int() (int, error)
 }
 
 const (
 	NotByte = "This type not []byte"
+	NotInt = "This type not int"
 )
 
 const (
@@ -118,6 +120,16 @@ func (i Item) Byte() ([]byte, error) {
 	return nil, nil
 }
 
+func (i Item) Int()  (int, error){
+	if i.Value != nil {
+		if v, ok := i.Value.(int); ok {
+			return v, nil
+		} else {
+			return 0, errors.New(NotInt)
+		}
+	}
+	return 0, nil
+}
 // Return full cache
 func (c *Cache) GetFullMap() map[string]Item {
 	return c.Items
