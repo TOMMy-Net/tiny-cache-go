@@ -37,7 +37,7 @@ const (
 )
 
 const (
-	defaultExpirationConst      = 5 * time.Hour    // 6 hour
+	defaultExpirationConst      = 720 * time.Hour    // 1 month
 	defaultcleanupIntervalConst = 10 * time.Second // 10 sec
 	defaultBuf                  = 200
 )
@@ -120,6 +120,7 @@ func (i Item) Byte() ([]byte, error) {
 	return nil, nil
 }
 
+// Return int
 func (i Item) Int()  (int, error){
 	if i.Value != nil {
 		if v, ok := i.Value.(int); ok {
@@ -128,6 +129,10 @@ func (i Item) Int()  (int, error){
 			return 0, errors.New(NotInt)
 		}
 	}
+	return 0, nil
+}
+
+func (i Item) Float() (float64, error){
 	return 0, nil
 }
 // Return full cache
