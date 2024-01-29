@@ -41,13 +41,13 @@ const (
 const (
 	defaultExpirationConst      = 720 * time.Hour  // 1 month
 	defaultcleanupIntervalConst = 10 * time.Second // 10 sec
-	defaultBuf                  = 200
+	defaultBuf                  = 500
 )
 
 // Creating a new cache space
 func New() *Cache {
 
-	items := make(map[string]Item)
+	items := make(map[string]Item, defaultBuf)
 
 	cache := Cache{
 		Items:             items,
@@ -138,7 +138,7 @@ func (i Item) Int() (int, error) {
 			}
 		case int:
 			if v, ok := i.Value.(int); ok {
-				
+
 				return v, nil
 			}
 		case int8:
