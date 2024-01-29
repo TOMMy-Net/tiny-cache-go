@@ -29,15 +29,17 @@ type Result interface {
 	String() string
 	Byte() ([]byte, error)
 	Int() (int, error)
+	Float64() (float64, error)
 }
 
 const (
-	NotByte = "This type not []byte"
-	NotInt = "This type not int"
+	NotByte    = "This type not []byte"
+	NotInt     = "This type not int"
+	NotFloat64 = "This type not float64"
 )
 
 const (
-	defaultExpirationConst      = 720 * time.Hour    // 1 month
+	defaultExpirationConst      = 720 * time.Hour  // 1 month
 	defaultcleanupIntervalConst = 10 * time.Second // 10 sec
 	defaultBuf                  = 200
 )
@@ -121,20 +123,72 @@ func (i Item) Byte() ([]byte, error) {
 }
 
 // Return int
-func (i Item) Int()  (int, error){
+func (i Item) Int() (int, error) {
 	if i.Value != nil {
-		if v, ok := i.Value.(int); ok {
-			return v, nil
-		} else {
-			return 0, errors.New(NotInt)
+		switch i.Value.(type) {
+		case float32:
+			if v, ok := i.Value.(float32); ok {
+				digit := int(v)
+				return digit, nil
+			}
+		case float64:
+			if v, ok := i.Value.(float64); ok {
+				digit := int(v)
+				return digit, nil
+			}
+		case int:
+			if v, ok := i.Value.(int); ok {
+				
+				return v, nil
+			}
+		case int8:
+			if v, ok := i.Value.(int8); ok {
+				digit := int(v)
+				return digit, nil
+			}
+		case int16:
+			if v, ok := i.Value.(int16); ok {
+				digit := int(v)
+				return digit, nil
+			}
+		case int32:
+			if v, ok := i.Value.(int32); ok {
+				digit := int(v)
+				return digit, nil
+			}
+		case int64:
+			if v, ok := i.Value.(int64); ok {
+				digit := int(v)
+				return digit, nil
+			}
 		}
 	}
 	return 0, nil
 }
 
-func (i Item) Float() (float64, error){
+func (i Item) Float64() (float64, error) {
+	if i.Value != nil {
+		switch i.Value.(type) {
+		case float32:
+			if v, ok := i.Value.(float32); ok {
+				digit := float64(v)
+				return digit, nil
+			}
+		case float64:
+			if v, ok := i.Value.(float64); ok {
+				return v, nil
+			}
+		case int:
+			if v, ok := i.Value.(int); ok {
+				digit := float64(v)
+				return digit, nil
+			}
+		}
+
+	}
 	return 0, nil
 }
+
 // Return full cache
 func (c *Cache) GetFullMap() map[string]Item {
 	return c.Items

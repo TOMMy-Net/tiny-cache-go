@@ -7,7 +7,7 @@ Example:
 ```
 c := cache.New() // new cache storage
 c.Set("key1", "Hi", 5*time.Minute)
-c.Set("key2", []byte("sffds"), 1*time.Minute)
+c.Set("key2", []byte("bye!"), 1*time.Minute)
 
 fmt.Println(c.Get("key1"))
 fmt.Println(c.Get("key2"))
