@@ -183,6 +183,26 @@ func (i Item) Float64() (float64, error) {
 				digit := float64(v)
 				return digit, nil
 			}
+		case int8:
+			if v, ok := i.Value.(int8); ok {
+				digit := float64(v)
+				return digit, nil
+			}
+		case int16:
+			if v, ok := i.Value.(int16); ok {
+				digit := float64(v)
+				return digit, nil
+			}
+		case int32:
+			if v, ok := i.Value.(int32); ok {
+				digit := float64(v)
+				return digit, nil
+			}
+		case int64:
+			if v, ok := i.Value.(int64); ok {
+				digit := float64(v)
+				return digit, nil
+			}
 		}
 
 	}
