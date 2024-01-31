@@ -26,16 +26,19 @@ type Cleaner interface {
 }
 
 type Result interface {
-	String() string
+	String() (string)
 	Byte() ([]byte, error)
 	Int() (int, error)
 	Float64() (float64, error)
 }
 
+
+
 const (
 	NotByte    = "This type not []byte"
 	NotInt     = "This type not int"
 	NotFloat64 = "This type not float64"
+	NotFound = "This key not found in cache"
 )
 
 const (
@@ -94,18 +97,18 @@ func (c *Cache) Get(key string) Result {
 	defer c.mu.RUnlock()
 	item, found := c.Items[key]
 	if !found {
-		return nil
+		return Item{}
 	} else {
 		if item.Expiration > time.Now().UnixMilli() {
 			return item
 
 		}
 	}
-	return nil
+	return Item{}
 
 }
 
-// Return key value and delete key 
+// Return key value and delete key
 func (c *Cache) GetD(key string) Result {
 	rst := c.Get(key)
 	c.mu.Lock()
@@ -115,8 +118,11 @@ func (c *Cache) GetD(key string) Result {
 }
 
 // Always return string
-func (i Item) String() string {
-	return fmt.Sprint(i.Value)
+func (i Item) String() (string) {
+	if i.Value != nil {
+		return fmt.Sprint(i.Value)
+	}
+	return ""
 }
 
 // Return []byte
@@ -170,9 +176,11 @@ func (i Item) Int() (int, error) {
 
 				return int(v), nil
 			}
+		default:
+			return 0, errors.New(NotInt)
 		}
 	}
-	return 0, nil
+	return 0, errors.New(NotFound)
 }
 
 func (i Item) Float64() (float64, error) {
@@ -212,10 +220,12 @@ func (i Item) Float64() (float64, error) {
 
 				return float64(v), nil
 			}
+		default:
+			return 0, errors.New(NotFloat64)
 		}
 
 	}
-	return 0, errors.New(NotInt)
+	return 0, errors.New(NotFound)
 }
 
 // Return full cache
