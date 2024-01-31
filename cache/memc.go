@@ -105,6 +105,15 @@ func (c *Cache) Get(key string) Result {
 
 }
 
+// Return key value and delete key 
+func (c *Cache) GetD(key string) Result {
+	rst := c.Get(key)
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.Items, key)
+	return rst
+}
+
 // Always return string
 func (i Item) String() string {
 	return fmt.Sprint(i.Value)
@@ -128,13 +137,13 @@ func (i Item) Int() (int, error) {
 		switch i.Value.(type) {
 		case float32:
 			if v, ok := i.Value.(float32); ok {
-				digit := int(v)
-				return digit, nil
+
+				return int(v), nil
 			}
 		case float64:
 			if v, ok := i.Value.(float64); ok {
-				digit := int(v)
-				return digit, nil
+
+				return int(v), nil
 			}
 		case int:
 			if v, ok := i.Value.(int); ok {
@@ -143,23 +152,23 @@ func (i Item) Int() (int, error) {
 			}
 		case int8:
 			if v, ok := i.Value.(int8); ok {
-				digit := int(v)
-				return digit, nil
+
+				return int(v), nil
 			}
 		case int16:
 			if v, ok := i.Value.(int16); ok {
-				digit := int(v)
-				return digit, nil
+
+				return int(v), nil
 			}
 		case int32:
 			if v, ok := i.Value.(int32); ok {
-				digit := int(v)
-				return digit, nil
+
+				return int(v), nil
 			}
 		case int64:
 			if v, ok := i.Value.(int64); ok {
-				digit := int(v)
-				return digit, nil
+
+				return int(v), nil
 			}
 		}
 	}
@@ -171,8 +180,8 @@ func (i Item) Float64() (float64, error) {
 		switch i.Value.(type) {
 		case float32:
 			if v, ok := i.Value.(float32); ok {
-				digit := float64(v)
-				return digit, nil
+
+				return float64(v), nil
 			}
 		case float64:
 			if v, ok := i.Value.(float64); ok {
@@ -180,33 +189,33 @@ func (i Item) Float64() (float64, error) {
 			}
 		case int:
 			if v, ok := i.Value.(int); ok {
-				digit := float64(v)
-				return digit, nil
+
+				return float64(v), nil
 			}
 		case int8:
 			if v, ok := i.Value.(int8); ok {
-				digit := float64(v)
-				return digit, nil
+
+				return float64(v), nil
 			}
 		case int16:
 			if v, ok := i.Value.(int16); ok {
-				digit := float64(v)
-				return digit, nil
+
+				return float64(v), nil
 			}
 		case int32:
 			if v, ok := i.Value.(int32); ok {
-				digit := float64(v)
-				return digit, nil
+
+				return float64(v), nil
 			}
 		case int64:
 			if v, ok := i.Value.(int64); ok {
-				digit := float64(v)
-				return digit, nil
+
+				return float64(v), nil
 			}
 		}
 
 	}
-	return 0, nil
+	return 0, errors.New(NotInt)
 }
 
 // Return full cache
@@ -250,7 +259,7 @@ func (c *Cache) DealeteAllCache() {
 func (c *Cache) DealeteEx() {
 	c.mu.Lock()
 
-	new := make(map[string]Item)
+	new := make(map[string]Item, defaultBuf)
 	for i, k := range c.Items {
 		if time.Now().UnixMilli() < k.Expiration && k.Expiration > 0 {
 			new[i] = k
