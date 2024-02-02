@@ -251,6 +251,7 @@ func (c *Cache) GetExUnix(key string) int64 {
 	return 0
 }
 
+// Garbage collector
 func StartGC(c *Cache) {
 	for {
 		<-time.After(c.CleanupInterval)
@@ -260,7 +261,7 @@ func StartGC(c *Cache) {
 	}
 }
 
-// Dealete all in cache
+// Delete all in cache
 func (c *Cache) DealeteAllCache() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -268,6 +269,7 @@ func (c *Cache) DealeteAllCache() {
 	c.Items = new
 }
 
+// Removes expired cache
 func (c *Cache) DealeteEx() {
 	c.mu.Lock()
 
@@ -280,6 +282,7 @@ func (c *Cache) DealeteEx() {
 	c.Items = new
 	c.mu.Unlock()
 }
+
 
 func AddNewMap(c *Cache, n map[string]Item) {
 	if n != nil {
