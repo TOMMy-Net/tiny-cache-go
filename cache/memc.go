@@ -26,19 +26,17 @@ type Cleaner interface {
 }
 
 type Result interface {
-	String() (string)
+	String() string
 	Byte() ([]byte, error)
 	Int() (int, error)
 	Float64() (float64, error)
 }
 
-
-
 const (
 	NotByte    = "This type not []byte"
 	NotInt     = "This type not int"
 	NotFloat64 = "This type not float64"
-	NotFound = "This key not found in cache"
+	NotFound   = "This key not found in cache"
 )
 
 const (
@@ -63,18 +61,22 @@ func New() *Cache {
 	return &cache
 }
 
-// Set a new default cache expiration time
+// Set a new default cache expiration time (time >= 0)
 func (c *Cache) SetDefaultExpiration(t time.Duration) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.DefaultExpiration = t
+	if t >= 0 {
+		c.DefaultExpiration = t
+	}
 }
 
-// Set a new default cache CleanupInterval time
+// Set a new default cache CleanupInterval time (time >= 0)
 func (c *Cache) SetDefaultCleanupInterval(t time.Duration) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.CleanupInterval = t
+	if t >= 0 {
+		c.CleanupInterval = t
+	}
 }
 
 // Add an item to the cache, replacing any existing item.
@@ -92,7 +94,7 @@ func (c *Cache) Set(key string, value interface{}, duration time.Duration) {
 }
 
 // Retern key vallue
-func (c *Cache) Get(key string) Result {
+func (c *Cache) Get(key string) Item {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
 	item, found := c.Items[key]
@@ -109,7 +111,7 @@ func (c *Cache) Get(key string) Result {
 }
 
 // Return key value and delete key
-func (c *Cache) GetD(key string) Result {
+func (c *Cache) GetD(key string) Item {
 	rst := c.Get(key)
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -118,7 +120,7 @@ func (c *Cache) GetD(key string) Result {
 }
 
 // Always return string
-func (i Item) String() (string) {
+func (i Item) String() string {
 	if i.Value != nil {
 		return fmt.Sprint(i.Value)
 	}
@@ -134,7 +136,7 @@ func (i Item) Byte() ([]byte, error) {
 			return nil, errors.New(NotByte)
 		}
 	}
-	return nil, nil
+	return nil, errors.New(NotFound)
 }
 
 // Return int

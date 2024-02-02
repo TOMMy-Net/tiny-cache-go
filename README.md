@@ -17,3 +17,13 @@ var b, err = c.Get("key2").Byte()
 
 var s string = c.GetD("key1").String() // Get key value and delete in memory
 ```
+
+You can also configure the cache to clear and expire cache times
+
+Example:
+
+```
+c := cache.New()
+c.SetDefaultCleanupInterval(1*time.Hour)
+c.SetDefaultExpiration(1*time.Hour)
+```
