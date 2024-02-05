@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+
 // Cache is a simple caching system that stores key-value pairs.
 type Cache struct {
 	mu                sync.RWMutex

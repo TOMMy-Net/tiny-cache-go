@@ -28,6 +28,11 @@ Example:
 c := cache.New()
 c.SetDefaultCleanupInterval(1*time.Hour)
 c.SetDefaultExpiration(1*time.Hour)
+
+
 ```
+
+`go get github.com/TOMMy-Net/tiny-cache-go` : to download
+
 
 ![Caching and performance optimization in golang.](https://media.licdn.com/dms/image/D4D12AQEWMwIgrMa0eg/article-cover_image-shrink_600_2000/0/1685216253061?e=2147483647&v=beta&t=dK37ND_rXXfi1dbNckpVb5-Q1H96QP7WIwbn9O7nYIc)
